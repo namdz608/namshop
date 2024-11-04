@@ -1,14 +1,14 @@
-declare global {
+declare global { //declare global được dùng để mở rộng các kiểu toàn cục trong TypeScript
     namespace Express {
-      interface Request {
-        currentUser?: IAuthPayload;
+      interface Request {  //Bằng cách mở rộng interface Request, ta bổ sung thuộc tính currentUser vào đối tượng Request của ns Express.
+        currentUser?: IAuthPayload; //currentUser là một thuộc tính tùy chọn (?), có kiểu là IAuthPayload.
       }
     }
   }
   
-  export interface IAuthPayload {
+  export interface IAuthPayload { //interface giúp định hình và ràng buộc cấu trúc dữ liệu để đảm bảo tính an toàn về kiểu
     id: number;
-    username: string;
+    username: string; 
     email: string;
     iat?: number;
   }
