@@ -1,3 +1,5 @@
+// file index là để export các biến hoặc hàm ra global để có thể truy cập được
+
 export {
     IAuthPayload,
     IAuthDocument,

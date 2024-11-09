@@ -1,3 +1,5 @@
+//file này để xử lý các lỗi trả về
+
 import { StatusCodes } from 'http-status-codes';
 
 export interface IErrorResponse {
@@ -5,7 +7,7 @@ export interface IErrorResponse {
   statusCode: number;
   status: string;
   comingFrom: string;
-  serializeErrors(): IError;
+  serializeErrors(): IError;  // Hàm này bắt buộc trả về dạng IErorrs
 }
 
 export interface IError {
@@ -15,11 +17,14 @@ export interface IError {
   comingFrom: string;
 }
 
+// Xuất ra một lớp trừu tượng `CustomError` mở rộng từ lớp `Error`
 export abstract class CustomError extends Error {
+  // Hai thuộc tính trừu tượng bắt buộc phải được khai báo trong các lớp con
   abstract statusCode: number;
   abstract status: string;
   comingFrom: string;
 
+  // Hàm khởi tạo nhận vào hai tham số: `message` và `comingFrom`
   constructor(message: string, comingFrom: string) {
     super(message);
     this.comingFrom = comingFrom;
@@ -35,6 +40,7 @@ export abstract class CustomError extends Error {
   }
 }
 
+//các class dưới kế thừa từ abtracst nên có thể tùy chỉnh biến statusCode hoặc status theo ý muốn
 export class BadRequestError extends CustomError {
   statusCode = StatusCodes.BAD_REQUEST;
   status = 'error';
