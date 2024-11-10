@@ -1,6 +1,5 @@
-import { ObjectId } from "mongoose";
 import { IRatingCategories } from "./review.interface";
-
+//import { ObjectId } from "mongoose";
 // By extending ISellerDocument with the Record<string, any> you allow an object to contain other
 // string keys with any values along with those defined in the interface.
 // The nice part is that you still have the autocompletion for the defined properties
@@ -58,7 +57,8 @@ export interface ICertificate {
 }
 
 export interface ISellerDocument extends Record<string, SellerType> {
-  _id?: string | ObjectId;
+  // _id?: string | ObjectId;
+  _id?: string ;
   profilePublicId?: string;
   fullName: string;
   username?: string;

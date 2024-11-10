@@ -1,17 +1,19 @@
-import mongoose, { ObjectId } from 'mongoose';
+// import mongoose, { ObjectId } from 'mongoose';
 import { IOffer } from './order.interface';
 import { ISellerGig } from './gig.interface';
 import { ISellerDocument } from './seller.interface';
 
 export interface IConversationDocument extends Document {
-  _id: mongoose.Types.ObjectId | string;
+  // _id: mongoose.Types.ObjectId | string;
+  _id: string;
   conversationId: string;
   senderUsername: string;
   receiverUsername: string;
 }
 
 export interface IMessageDocument {
-  _id?: string | ObjectId;
+  // _id?: string | ObjectId;
+  _id: string;
   conversationId?: string;
   body?: string;
   url?: string;

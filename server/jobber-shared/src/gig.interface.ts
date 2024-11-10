@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+// import { ObjectId } from "mongoose";
 import { IRatingCategories, IReviewDocument } from "./review.interface";
 import { ISellerDocument } from "./seller.interface";
 
@@ -26,11 +26,14 @@ export interface ICreateGig extends Record<string, GigType> {
 }
 
 export interface ISellerGig {
-  _id?: string | ObjectId;
+  // _id?: string | ObjectId;
+  _id?: string;
   // this "id" property is used because elastcisearch does not accept a key with an underscore "_id"
   // elasticsearch has _id as a reserved field name
-  id?: string | ObjectId;
-  sellerId?: string | ObjectId;
+  // id?: string | ObjectId;
+  id?: string;
+  // sellerId?: string | ObjectId;
+  sellerId?: string;
   title: string;
   username?: string;
   profilePicture?: string;

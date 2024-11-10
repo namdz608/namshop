@@ -15,11 +15,11 @@
     "trailingComma": "es5"
   },
   "keywords": [],
-  "name": "namdz",
+  "name": "@namdz608/jobber-shared",
   "author": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/namdz608/namshop.git"
+    "url": "git+https://github.com/namdz608/jobber-shared.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -35,21 +35,20 @@
     }
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^8.15.1",
+    "@elastic/elasticsearch": "^8.13.0",
     "cloudinary": "^2.1.0",
-    "express": "^4.21.1",
+    "express": "^4.19.2",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.0",
-    "typescript": "^5.4.3",
+    "typescript": "^5.6.3",
     "winston": "^3.13.0",
     "winston-elasticsearch": "^0.18.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.25.9",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-typescript": "^7.26.0",
+    "@babel/cli": "^7.24.1",
+    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-typescript": "^7.24.1",
     "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.7"
+    "@types/jsonwebtoken": "^9.0.6"
   }
 }
