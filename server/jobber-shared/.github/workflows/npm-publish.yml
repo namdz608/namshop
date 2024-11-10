@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v3
         with: 
           node-version: "20.x"
-      - run: cd server/jobber-shared && npm install
+      - run: npm install
       - run: npm run build
       - run: |
           echo @namdz608:https://npm.pkg.github.com/ > build/.npmrc
