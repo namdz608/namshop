@@ -19,7 +19,7 @@
   "author": "",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/namdz608/namshop.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

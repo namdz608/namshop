@@ -4,30 +4,29 @@
 name: Node.js Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branchs: [master]
 
 jobs:
-  build:
+  publish: 
     runs-on: ubuntu-latest
+    permission:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
-
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
-      - run: npm ci
+      - uses: actions/setup-node@v3
+        with: 
+          node-version: "20.x"
+      - run: npm install
+      - run: npm run build
+      - run: |
+          echo @namdz608:https://npm.pkg.github.com/ > build/.npmrc
+          echo '//npm.pkg.github.com/:_authToken:${NPM_TOKEN}' >>  build/.npmrc 
       - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+        working-directory: ./build
+        env: 
+          NPM_TOKEN: ${{ secret.GITHUB_TOKEN }}
+
+
+
