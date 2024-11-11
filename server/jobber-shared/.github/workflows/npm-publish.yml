@@ -8,25 +8,37 @@ on:
     branchs: [master]
 
 jobs:
-  publish: 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20.x"
+      - run: npm ci
+
+  publish-gpr:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       packages: write
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        with: 
+        with:
           node-version: "20.x"
+          registry-url: https://npm.pkg.github.com/
       - run: npm install
       - run: npm run build
-      - run: |
-          echo @namdz608:https://npm.pkg.github.com/ > build/.npmrc
-          echo '//npm.pkg.github.com/:_authToken:${NPM_TOKEN}' >>  build/.npmrc 
+      - run: ls -a
+      - run: echo "@username:registry=https://npm.pkg.github.com" >> build/.npmrc
+      - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> build/.npmrc
+      - run: cat build/.npmrc 
       - run: npm publish
         working-directory: ./build
-        env: 
-          NPM_TOKEN: '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'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
 
