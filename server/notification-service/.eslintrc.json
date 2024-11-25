@@ -1,3 +1,7 @@
+//Chức năng chính của file ESLint: File này cho phép bạn chỉ định các quy tắc (rules) như:
+//Bắt buộc sử dụng dấu ngoặc kép đơn ' hoặc kép "., Phát hiện lỗi tiềm ẩn như biến chưa được định nghĩa.,...
+//Cấu hình môi trường làm việc (environment):
+
 {
     "root": true,
     "parser": "@typescript-eslint/parser",
