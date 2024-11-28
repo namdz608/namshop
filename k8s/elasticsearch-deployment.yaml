@@ -33,6 +33,8 @@ spec:
               value: elastic
             - name: ELASTIC_USERNAME
               value: elastic
+            - name: ES_JAVA_OPTS
+              value: '-Xms512m -Xmx512m'
             - name: discovery.type
               value: single-node
             - name: xpack.security.enabled

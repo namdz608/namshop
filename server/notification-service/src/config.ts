@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 
 dotenv.config({})
 
+// Viết 1 class Config với các dữ liệu là các biến trong file .env
 class Config {
     public NODE_ENV: string | undefined;
     public CLIENT_URL: string | undefined;

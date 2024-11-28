@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    objectset.rio.cattle.io/hash: 5520c971e9796ccf55c4ebc4fb26a3398180ce36
+  name: rabbitmq
+spec:
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.statefulset-development-rabbitmq
+  serviceName: rabbitmq-headless
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        workload.user.cattle.io/workloadselector: apps.statefulset-development-rabbitmq
+    spec:
+      affinity: {}
+      containers:
+        - env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: senprints
+            - name: RABBITMQ_DEFAULT_PASS
+              value: senprints
+          image: rabbitmq:3.12.12-management
+          imagePullPolicy: Always
+          name: rabbitmq
+          ports:
+            - containerPort: 5672
+              name: rabbitmq
+              protocol: TCP
+            - containerPort: 15672
+              name: management
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '1'
+              memory: 300Mi
+            requests:
+              cpu: 10m
+              memory: 10Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /bitnami_bak
+              name: data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: rabbitmq-dev-data

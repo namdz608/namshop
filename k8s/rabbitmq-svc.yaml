@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    objectset.rio.cattle.io/hash: addd80b94b170a4a9ef3b908aba8af1a4afb52b8
+  name: rabbitmq
+spec:
+  ports:
+    - name: rabbitmq
+      nodePort: 30672
+      port: 5672
+      protocol: TCP
+      targetPort: 5672
+    - name: managemnet
+      nodePort: 30673
+      port: 15672
+      protocol: TCP
+      targetPort: 15672
+  selector:
+    app: rabbitmq
+  sessionAffinity: None
+  type: NodePort

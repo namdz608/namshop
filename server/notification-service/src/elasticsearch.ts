@@ -9,6 +9,7 @@ const elasticsearchClient = new Client({
     node: `${config.ELASTIC_SEARCH_URL}`
 })
 
+//Hàm kiểm tra connect của app đến elasticsearch
 export async function checkConnection() {
     let isConnect = false;
     while(!isConnect){
