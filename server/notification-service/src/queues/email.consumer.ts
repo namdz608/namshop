@@ -29,7 +29,7 @@ export async function consumeAuthEmailMessage(channel: Channel): Promise<void> {
                 verifyLink,
                 resetLink
             }
-            await sendEmail(template,receiverEmail,locals)
+            await sendEmail(template, receiverEmail, locals)
             channel.ack(msg!)
         });
     } catch (e) {
@@ -49,6 +49,65 @@ export async function consumeOrderEmailMessages(channel: Channel): Promise<void>
         const jobberQueue = await channel.assertQueue(queueName, { durable: true, autoDelete: false });
         await channel.bindQueue(jobberQueue.queue, exchangeName, routingKey);
         channel.consume(jobberQueue.queue, async (msg: ConsumeMessage | null) => {
+            const { receiverEmail,
+                username,
+                template,
+                sender,
+                offerLink,
+                amount,
+                buyerUsername,
+                sellerUsername,
+                title,
+                description,
+                deliveryDays,
+                orderId,
+                orderDue,
+                requirements,
+                orderUrl,
+                originalDate,
+                newDate,
+                reason,
+                subject,
+                header,
+                type,
+                message,
+                serviceFee,
+                total } = JSON.parse(msg!.content.toString());
+
+            const locals: IEmailLocals = {
+                appLink: `${config.CLIENT_URL}`,
+                appIcon: 'https://i.ibb.co/Kyp2m0t/cover.png',
+                username,
+                sender,
+                offerLink,
+                amount,
+                buyerUsername,
+                sellerUsername,
+                title,
+                description,
+                deliveryDays,
+                orderId,
+                orderDue,
+                requirements,
+                orderUrl,
+                originalDate,
+                newDate,
+                reason,
+                subject,
+                header,
+                type,
+                message,
+                serviceFee,
+                total
+            }
+            console.log('template',template)
+            if (template === 'orderPlaced'){
+                await sendEmail('orderPlaced',receiverEmail,locals)
+                await sendEmail('orderReciept',receiverEmail,locals)
+            }
+            else {
+                await sendEmail(template,receiverEmail,locals)
+            }
             channel.ack(msg!);
         });
     } catch (error) {
