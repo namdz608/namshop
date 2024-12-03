@@ -102,7 +102,7 @@ services:
     container_name: notification_container
     build:
       context: ../server/notification-service
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     restart: always
     ports:
       - 4001:4001
