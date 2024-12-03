@@ -101,7 +101,7 @@ services:
   notifications:
     container_name: notification_container
     build:
-      context: ../server/2-notification-service
+      context: ../server/notification-service
       dockerfile: Dockerfile.dev
     restart: always
     ports:
