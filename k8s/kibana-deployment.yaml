@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kibana
+    objectset.rio.cattle.io/hash: 1e9699ef4499be83588cd48a1a055597e0ee41f6
+  name: kibana
+spec:
+  selector:
+    matchLabels:
+      app: kibana
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - env:
+            - name: ELASTICSEARCH_URL
+              value: http://elasticsearch:9200
+            - name: ELASTICSEARCH_USERNAME
+              value: elastic
+            - name: ELASTICSEARCH_PASSWORD
+              value: elastic
+          image: docker.elastic.co/kibana/kibana:7.14.0
+          imagePullPolicy: IfNotPresent
+          name: kibana
+          ports:
+            - containerPort: 5601
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

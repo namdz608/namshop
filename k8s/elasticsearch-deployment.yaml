@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: elasticsearch
+    objectset.rio.cattle.io/hash: 6276d78c56903781c68803c500e92ef7bd6c232e
+  name: elasticsearch
+
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: elasticsearch
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        cattle.io/timestamp: '2024-11-14T02:42:29Z'
+      creationTimestamp: null
+      labels:
+        app: elasticsearch
+      namespace: senprints-dev
+    spec:
+      containers:
+        - env:
+            - name: ELASTIC_PASSWORD
+              value: elastic
+            - name: ELASTIC_USERNAME
+              value: elastic
+            - name: ES_JAVA_OPTS
+              value: '-Xms512m -Xmx512m'
+            - name: discovery.type
+              value: single-node
+            - name: xpack.security.enabled
+              value: 'true'
+          image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+          imagePullPolicy: IfNotPresent
+          name: elasticsearch
+          ports:
+            - containerPort: 9200
+              name: 9200tcp
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '1'
+              memory: 2000Mi
+            requests:
+              cpu: 10m
+              memory: 100Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /data/elasticsearch/
+              name: elasticsearch-data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: elasticsearch-data
+          persistentVolumeClaim:
+            claimName: elasticsearch-pv-claim
