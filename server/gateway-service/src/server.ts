@@ -11,6 +11,7 @@ import { StatusCodes } from 'http-status-codes';
 import 'express-async-errors';
 import http from 'http'
 require('dotenv').config();
+import {elasticsearch} from './elasticsearch'
 
 
 const SERVER_PORT = 4000
@@ -52,13 +53,13 @@ export class GatewayServer {
     }
 
     private startElasticseach(): void {
-
+        elasticsearch.checkConnections()
     }
 
     private standardMiddleware(app: Application): void {
-        app.use(compression())
-        app.use(json({ limit: '200mb' }));
-        app.use(urlencoded({ extended: true, limit: '200mb' }));
+        app.use(compression())//Giúp cải thiện hiệu suất mạng và tăng tốc độ tải trang, đặc biệt với dữ liệu lớn như JSON hoặc HTML.
+        app.use(json({ limit: '200mb' })); // Middleware của Express để parse request body với định dạng JSON.
+        app.use(urlencoded({ extended: true, limit: '200mb' }));//Đặt giới hạn kích thước tối đa của request body JSON là 200MB. Nếu vượt quá, ứng dụng sẽ trả lỗi.
     }
 
     private routesMiddleware(): void {
