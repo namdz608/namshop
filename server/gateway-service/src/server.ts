@@ -12,6 +12,7 @@ import 'express-async-errors';
 import http from 'http'
 require('dotenv').config();
 import {elasticsearch} from './elasticsearch'
+import { appRoutes } from "./routes";
 
 
 const SERVER_PORT = 4000
@@ -27,7 +28,7 @@ export class GatewayServer {
     public start(): void {
         this.securityMiddleware(this.app)
         this.standardMiddleware(this.app)
-        this.routesMiddleware()
+        this.routesMiddleware(this.app)
         this.errorHandler(this.app)
         this.startElasticseach()
         this.startServer(this.app)
@@ -62,7 +63,8 @@ export class GatewayServer {
         app.use(urlencoded({ extended: true, limit: '200mb' }));//Đặt giới hạn kích thước tối đa của request body JSON là 200MB. Nếu vượt quá, ứng dụng sẽ trả lỗi.
     }
 
-    private routesMiddleware(): void {
+    private routesMiddleware(app:Application): void {
+        appRoutes(app) // gọi đến hàm appRoutes() trong file routes.ts => các file trong folder routes => goij đến các file trong folder controller
     }
 
     private errorHandler(app: Application): void {
