@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-data-pv-claim
+  namespace: senhub-prod
+spec:
+  selector:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeMode: Filesystem  
+  volumeName: mariadb-data
+  resources:
+    requests:
+      storage: 5Gi

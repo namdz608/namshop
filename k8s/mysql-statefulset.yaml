@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: mariadb
+    objectset.rio.cattle.io/hash: aa520eddcac178562bdf1c8dd41af4b570ba4587
+    workload.user.cattle.io/workloadselector: apps.statefulset-senhub-dev-sh-mariadb
+  name: sh-mariadb
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.statefulset-senhub-dev-sh-mariadb
+  serviceName: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+        workload.user.cattle.io/workloadselector: apps.statefulset-senhub-dev-sh-mariadb
+    spec:
+      containers:
+        - args:
+            - '--innodb_buffer_pool_size=2G'
+            - '--long_query_time=2'
+            - '--query-cache-type=1'
+            - '--query-cache-size=128M'
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: Sp77777776
+          image: mariadb:10.3
+          imagePullPolicy: IfNotPresent
+          name: mariadb
+          ports:
+            - containerPort: 3306
+              name: mariadb
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '1'
+            requests:
+              cpu: 10m
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mariadb-data-pv-claim

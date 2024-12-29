@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    objectset.rio.cattle.io/hash: f09057d85bdfc1d6cb324ac990f4db2b567a9780
+  name: mariadb-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 5Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: mariadb-data-pv-claim
+    namespace: senhub-prod
+  hostPath:
+    path: /data/senhub-prod/mariadb
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
