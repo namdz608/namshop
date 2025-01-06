@@ -10,10 +10,14 @@ import helmet from 'helmet'//helmet là một package rất phổ biến trong N
 import compression from "compression";
 import { appRoutes } from './routes'
 require('dotenv').config();
+import {createConnection} from './queues/connections'
 import { checkConnections } from './elasticsearch'
+import { Channel } from "amqplib";
 
 const SERVER_PORT = 4002;
 const log: Logger = winstonLogger(`${process.env.ELASTIC_SEARCH_URL}`, 'authElastich server', 'debug')
+
+export let authChannel: Channel;
 
 export function start(app: Application): void {
     securityMiddleware(app);
@@ -56,7 +60,7 @@ function routeMiddleware(app: Application): void {
 }
 
 async function startQueues(): Promise<void> {
-
+    authChannel= await createConnection() as Channel
 }
 
 function startElasticSearch(): void {
