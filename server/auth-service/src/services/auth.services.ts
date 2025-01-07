@@ -6,6 +6,8 @@ import { publishDirectMessage } from '../queues/auth.producer';
 import { authChannel } from '../server';
 import { omit } from 'lodash';
 import db from '../../db-knex'
+import { sign } from 'jsonwebtoken';
+require('dotenv').config();
 
 const log: Logger = winstonLogger(`${process.env.ELASTIC_SEARCH_URL}`, 'authQueueConeections', 'debug')
 
@@ -52,9 +54,108 @@ export async function getUserByUsernameOrEmail(username: string, email: string):
             .where('username', transformedUsername)
             .orWhere('email', transformedEmail)
             .first();
-        return user.dataValues;    
+        return user.dataValues;
     } catch (e) {
         log.error(e);
     }
 }
 
+export async function getUserByUsername(username: string): Promise<IAuthDocument | undefined> {
+    try {
+        const transformedUsername = firstLetterUppercase(username);
+        const user: Model = await db('auths')
+            .where('username', transformedUsername)
+            .first();
+        return user.dataValues;
+    } catch (e) {
+        log.error(e);
+    }
+}
+
+export async function getUserByEmail(email: string): Promise<IAuthDocument | undefined> {
+    try {
+        const transformedEmail = lowerCase(email);
+        const user: Model = await db('auths')
+            .where('email', transformedEmail)
+            .first();
+        return user.dataValues;
+    } catch (e) {
+        log.error(e);
+    }
+}
+
+export async function getAuthUserByVerificationToken(token: string): Promise<IAuthDocument | undefined> {
+    try {
+        const user: Model = await db('auths')
+            .where('emailVerificationToken', token)
+            .first();
+        return user.dataValues;
+    } catch (e) {
+        log.error(e);
+    }
+}
+
+export async function getAuthUserByPasswordToken(token: string): Promise<IAuthDocument | undefined> {
+    try {
+        const user: Model = await db('auths')
+            .where('passwordResetToken', token)
+            .andWhere('passwordResetExpires', '>', new Date())
+            .first();
+        return user?.dataValues;
+    } catch (error) {
+        log.error(error);
+    }
+}
+
+export async function updateVerifyEmailField(authId: number, emailVerified: number, emailVerificationToken?: string): Promise<void> {
+    try {
+        const updateData = !emailVerificationToken
+            ? { emailVerified }
+            : { emailVerified, emailVerificationToken }; //Nếu không tồn tại emailVerificationToken thì biến updateData = { emailVerified } còn có thì sẽ là {emailVerified, emailVerificationToken}
+        await db('auths') // Thay 'auths' bằng tên bảng của bạn
+            .where({ id: authId })
+            .update(updateData);
+    } catch (error) {
+        log.error(error);
+    }
+}
+
+export async function updatePasswordToken(authId: number, token: string, tokenExpiration: Date): Promise<void> {
+    try {
+        await db('auths') // Thay 'auths' bằng tên bảng của bạn
+            .where({ id: authId })
+            .update({
+                passwordResetToken: token,
+                passwordResetExpires: tokenExpiration
+            })
+    } catch (error) {
+        log.error(error);
+    }
+}
+
+export async function updatePassword(authId: number, password: string): Promise<void> {
+    try {
+        await db('auths')
+            .update({
+                password,
+                passwordResetToken: '',
+                passwordResetExpires: new Date()
+            }
+            ).
+            where({ id: authId })
+
+    } catch (error) {
+        log.error(error);
+    }
+}
+
+export function signToken(id: number, email: string, username: string): string {
+    return sign(
+      {
+        id,
+        email,
+        username
+      },
+      process.env.JWT_TOKEN!
+    );
+  }

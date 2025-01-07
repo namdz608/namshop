@@ -13,6 +13,7 @@ import http from 'http'
 require('dotenv').config();
 import {elasticsearch} from './elasticsearch'
 import { appRoutes } from "./routes";
+import { axiosAuthInstance } from "./services/api/auth.service";
 
 
 const SERVER_PORT = 4000
@@ -51,6 +52,19 @@ export class GatewayServer {
             credentials: true,// cho phép gửi cookie từ client khi yêu cầu từ các miền khác.
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']//Các phương thức HTTP được phép (GET, POST, PUT, DELETE, OPTIONS).
         }))
+
+        app.use((req: Request, _res: Response, next: NextFunction) => {
+            if (req.session?.jwt) {
+              axiosAuthInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            //   axiosBuyerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            //   axiosSellerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            //   axiosGigInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            //   axiosMessageInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            //   axiosOrderInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            //   axiosReviewInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+            }
+            next();
+          });
     }
 
     private startElasticseach(): void {
