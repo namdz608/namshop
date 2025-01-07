@@ -1,8 +1,6 @@
-import knex, { Knex } from 'knex';
-import  config  from './knexfile';
+import knex from 'knex';
+import config from './knexfile';
 
-const knexConfig: Knex.Config = config.environment;
-
-const db = knex(knexConfig);
+const db = knex(config);
 
 export default db;

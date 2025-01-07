@@ -38,6 +38,7 @@
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
+    "mysql": "^2.18.1",
     "mysql2": "^3.6.3",
     "nodemon": "^3.1.9",
     "pino-pretty": "^10.2.3",
