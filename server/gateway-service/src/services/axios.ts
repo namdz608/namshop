@@ -3,7 +3,7 @@ import {sign } from 'jsonwebtoken'//Được dùng để tạo JWT (JSON Web Tok
 require('dotenv').config();
 
 export class AxiosService { //Lớp AxiosService giúp chuẩn hóa cách tạo các instance axios khi giao tiếp với nhiều API khác nhau. Nó tự động thêm JWT vào headers nếu cần, giúp việc xác thực API trở nên dễ dàng hơn.
-    public axios: ReturnType<typeof axios.create>
+    public axios: ReturnType<typeof axios.create> //ReturnType<typeof axios.create> - Đây là kiểu trả về của hàm axios.create(), tương ứng với một instance của Axios (AxiosInstance).
     constructor(baseUrl: string, serviceName: string){
         this.axios = this.axiosCreateInstance(baseUrl, serviceName);
     }
