@@ -12,6 +12,18 @@ require('dotenv').config();
 const log: Logger = winstonLogger(`${process.env.ELASTIC_SEARCH_URL}`, 'authQueueConeections', 'debug')
 
 export async function createAuthUser(data: IAuthDocument): Promise<IAuthDocument | undefined> {
+    const newuserData = {
+        username: data.username,
+        email: data.email,
+        profilePublicId: data.profilePicture,
+        password: data.password,
+        country: data.country,
+        profilePicture: data.profilePicture,
+        emailVerificationToken: data.emailVerificationToken,
+        browserName: data.browserName,
+        deviceType: data.deviceType
+    }
+    console.log(newuserData)
     const result: Model = await AuthModel.create(data);
     const messageDetail: IAuthBuyerMessageDetails = {
         username: result.dataValues.username!,
@@ -54,7 +66,7 @@ export async function getUserByUsernameOrEmail(username: string, email: string):
             .where('username', transformedUsername)
             .orWhere('email', transformedEmail)
             .first();
-        return user.dataValues;
+        return user?.dataValues;
     } catch (e) {
         log.error(e);
     }
@@ -151,11 +163,11 @@ export async function updatePassword(authId: number, password: string): Promise<
 
 export function signToken(id: number, email: string, username: string): string {
     return sign(
-      {
-        id,
-        email,
-        username
-      },
-      process.env.JWT_TOKEN!
+        {
+            id,
+            email,
+            username
+        },
+        process.env.JWT_TOKEN!
     );
-  }
+}

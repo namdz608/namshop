@@ -39,7 +39,7 @@ const AuthModel: ModelDefined<IAuthDocument, AuthUserCreationAttributes> & AuthM
         allowNull: false
     },
     emailVerificationToken: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING, 
         allowNull: true
     },
     emailVerified: {
@@ -49,11 +49,13 @@ const AuthModel: ModelDefined<IAuthDocument, AuthUserCreationAttributes> & AuthM
     },
     browserName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true,
+        defaultValue: 'test'
     },
     deviceType: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true,
+        defaultValue: 'iphone'
     },
     otp: {
         type: DataTypes.STRING
