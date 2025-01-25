@@ -4,14 +4,14 @@ import { Model } from 'sequelize'
 import { AuthModel } from '../models/auth.schema'
 import { publishDirectMessage } from '../queues/auth.producer';
 import { authChannel } from '../server';
-import { omit } from 'lodash';
+// import { omit } from 'lodash';
 import db from '../../db-knex'
 import { sign } from 'jsonwebtoken';
 require('dotenv').config();
 
 const log: Logger = winstonLogger(`${process.env.ELASTIC_SEARCH_URL}`, 'authQueueConeections', 'debug')
 
-export async function createAuthUser(data: IAuthDocument): Promise<IAuthDocument | undefined> {
+export async function createAuthUser(data: IAuthDocument): Promise<void | undefined> {
     const newuserData = {
         username: data.username,
         email: data.email,
@@ -21,16 +21,31 @@ export async function createAuthUser(data: IAuthDocument): Promise<IAuthDocument
         profilePicture: data.profilePicture,
         emailVerificationToken: data.emailVerificationToken,
         browserName: data.browserName,
-        deviceType: data.deviceType
+        deviceType: data.deviceType,
+        createdAt: data.createdAt,
     }
     console.log(newuserData)
-    const result: Model = await AuthModel.create(data);
+
+    const result = await db('auths').insert(newuserData).returning('*').into('auths')
+    console.log('const result from /auth-service/src/services/auth.services.ts',result)
+
+    //================ Insert theo kieu Sequelize ==================
+    // const result: Model = await AuthModel.create(data);
+    // const messageDetails: IAuthBuyerMessageDetails = {
+    //   username: result.dataValues.username!,
+    //   email: result.dataValues.email!,
+    //   profilePicture: result.dataValues.profilePicture!,
+    //   country: result.dataValues.country!,
+    //   createdAt: result.dataValues.createdAt!,
+    //   type: 'auth'
+    // };
+
     const messageDetail: IAuthBuyerMessageDetails = {
-        username: result.dataValues.username!,
-        email: result.dataValues.email!,
-        profilePicture: result.dataValues.profilePicture!,
-        country: result.dataValues.country!,
-        createdAt: result.dataValues.email!,
+        username: newuserData.username!,
+        email: newuserData.email!,
+        profilePicture: newuserData.profilePicture!,
+        country: newuserData.country!,
+        createdAt: newuserData.createdAt!,
         type: 'auth'
     }
     await publishDirectMessage(
@@ -40,8 +55,8 @@ export async function createAuthUser(data: IAuthDocument): Promise<IAuthDocument
         JSON.stringify(messageDetail),
         'Buyer details sent to buyer svc'
     )
-    const userData: IAuthDocument = omit(result.dataValues, ['password']) as IAuthDocument
-    return userData
+    // const userData: IAuthDocument = omit(result.dataValues, ['password']) as IAuthDocument
+    // return userData
 }
 
 export async function getAuthUserById(authId: number): Promise<Model<IAuthDocument> | undefined> {

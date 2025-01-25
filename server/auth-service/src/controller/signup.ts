@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import crypto from 'crypto';
 import { v4 as uuidV4 } from 'uuid';
 import { signupSchema } from "@notifications/schemes/signup";
-import { BadRequestError, firstLetterUppercase, IAuthDocument, IEmailMessageDetails, lowerCase } from "@namdz608/jobber-shared";
+import { BadRequestError, firstLetterUppercase, IAuthDocument, lowerCase } from "@namdz608/jobber-shared";
 import cloudinary, { UploadApiResponse, UploadApiErrorResponse } from 'cloudinary';
-import { createAuthUser, getUserByUsernameOrEmail, signToken } from "@notifications/services/auth.services";
-import { publishDirectMessage } from "@notifications/queues/auth.producer";
-import { authChannel } from "@notifications/server";
+import { createAuthUser, getUserByUsernameOrEmail  } from "@notifications/services/auth.services";
+// import { publishDirectMessage } from "@notifications/queues/auth.producer";
+// import { authChannel } from "@notifications/server";
 import { StatusCodes } from "http-status-codes";
 
 function uploads(
@@ -45,7 +45,7 @@ export async function create(req: Request, res: Response): Promise<void> {
     const profilePublicId = uuidV4();
 
     const uploadResult: UploadApiResponse = await uploads(profilePicture, `${profilePublicId}`, true, true) as UploadApiResponse;
-    console.log('upload Result:  ', uploadResult)
+    console.log('upload Result from auth-service/src/controller/signup.ts ', uploadResult)
     if (!uploadResult.public_id) {
         throw new BadRequestError('File upload error. Try again', 'SignUp create() method error');
     }
@@ -62,21 +62,22 @@ export async function create(req: Request, res: Response): Promise<void> {
         browserName,
         deviceType
     } as IAuthDocument;
-    console.log ('authData', authData)
-    const result: IAuthDocument = await createAuthUser(authData) as IAuthDocument;
+    console.log('authData', authData)
+    const result = await createAuthUser(authData);
     const verificationLink = `${process.env.CLIENT_URL}/confirm_email?v_token=${authData.emailVerificationToken}`;
-    const messageDetails: IEmailMessageDetails = {
-        receiverEmail: result.email,
-        verifyLink: verificationLink,
-        template: 'verifyEmail'
-    };
-    await publishDirectMessage(
-        authChannel,
-        'jobber-email-notification',
-        'auth-email',
-        JSON.stringify(messageDetails),
-        'Verify email message has been sent to notification service.'
-    );
-    const userJWT: string = signToken(result.id!, result.email!, result.username!);
-    res.status(StatusCodes.CREATED).json({ message: 'User created successfully', user: result, token: userJWT });
+    console.log(verificationLink)
+    // const messageDetails: IEmailMessageDetails = {
+    //     receiverEmail: result.email,
+    //     verifyLink: verificationLink,
+    //     template: 'verifyEmail'
+    // };
+    // await publishDirectMessage(
+    //     authChannel,
+    //     'jobber-email-notification',
+    //     'auth-email',
+    //     JSON.stringify(messageDetails),
+    //     'Verify email message has been sent to notification service.'
+    // );
+    // const userJWT: string = signToken(result.id!, result.email!, result.username!);
+    res.status(StatusCodes.CREATED).json({ message: 'User created successfully', user: result });
 }
