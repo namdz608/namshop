@@ -11,7 +11,7 @@
     "prettier:check": "prettier --check 'src/**/*.{ts,json}'",
     "prettier:fix": "prettier --write 'src/**/*.{ts,json}'",
     "dev": "nodemon -r tsconfig-paths/register src/app.ts | pino-pretty -c",
-    "build": "tsc --project tsconfig.json && ts-node tools/copyAssets.ts",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "test": "jest --coverage=true -w --forceExit --detectOpenHandles --watchAll=true"
   },
   "keywords": [],
@@ -30,6 +30,7 @@
     "express-async-errors": "^3.1.1",
     "helmet": "^8.0.0",
     "hpp": "^0.2.3",
+    "http-status-codes": "^2.3.0",
     "nodemon": "^3.1.7",
     "pino-pretty": "^10.2.3",
     "ts-node": "^10.9.1",
@@ -45,6 +46,7 @@
     "@types/hpp": "^0.2.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.1",
+    "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0"
   }
 }

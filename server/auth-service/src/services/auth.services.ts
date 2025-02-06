@@ -11,7 +11,7 @@ require('dotenv').config();
 
 const log: Logger = winstonLogger(`${process.env.ELASTIC_SEARCH_URL}`, 'authQueueConeections', 'debug')
 
-export async function createAuthUser(data: IAuthDocument): Promise<void | undefined> {
+export async function createAuthUser(data: IAuthDocument): Promise<object> {
     const newuserData = {
         username: data.username,
         email: data.email,
@@ -26,13 +26,14 @@ export async function createAuthUser(data: IAuthDocument): Promise<void | undefi
     }
     console.log(newuserData)
 
-    const result = await db('auths').insert(newuserData).returning('*').into('auths')
-    console.log('const result from /auth-service/src/services/auth.services.ts',result)
-
+    const result = await db('auths').insert(newuserData)
+    const newUser = await db('auths').select('*')
+    .where('id', result[0]).first()
+  
     //================ Insert theo kieu Sequelize ==================
     // const result: Model = await AuthModel.create(data);
     // const messageDetails: IAuthBuyerMessageDetails = {
-    //   username: result.dataValues.username!,
+    //   username: result.dataValues.username!,h
     //   email: result.dataValues.email!,
     //   profilePicture: result.dataValues.profilePicture!,
     //   country: result.dataValues.country!,
@@ -56,7 +57,7 @@ export async function createAuthUser(data: IAuthDocument): Promise<void | undefi
         'Buyer details sent to buyer svc'
     )
     // const userData: IAuthDocument = omit(result.dataValues, ['password']) as IAuthDocument
-    // return userData
+    return newUser
 }
 
 export async function getAuthUserById(authId: number): Promise<Model<IAuthDocument> | undefined> {
@@ -67,7 +68,7 @@ export async function getAuthUserById(authId: number): Promise<Model<IAuthDocume
                 exclude: ['password']
             }
         }) as Model;
-        return user?.dataValues;
+        return user
     } catch (error) {
         log.error(error);
     }
@@ -90,10 +91,11 @@ export async function getUserByUsernameOrEmail(username: string, email: string):
 export async function getUserByUsername(username: string): Promise<IAuthDocument | undefined> {
     try {
         const transformedUsername = firstLetterUppercase(username);
-        const user: Model = await db('auths')
+        const user = await db('auths')
             .where('username', transformedUsername)
             .first();
-        return user.dataValues;
+        console.log('user: ',user)
+        return user;
     } catch (e) {
         log.error(e);
     }
@@ -102,10 +104,10 @@ export async function getUserByUsername(username: string): Promise<IAuthDocument
 export async function getUserByEmail(email: string): Promise<IAuthDocument | undefined> {
     try {
         const transformedEmail = lowerCase(email);
-        const user: Model = await db('auths')
+        const user = await db('auths')
             .where('email', transformedEmail)
             .first();
-        return user.dataValues;
+        return user;
     } catch (e) {
         log.error(e);
     }

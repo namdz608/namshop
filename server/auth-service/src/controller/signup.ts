@@ -2,12 +2,13 @@ import { Request, Response } from "express";
 import crypto from 'crypto';
 import { v4 as uuidV4 } from 'uuid';
 import { signupSchema } from "@notifications/schemes/signup";
-import { BadRequestError, firstLetterUppercase, IAuthDocument, lowerCase } from "@namdz608/jobber-shared";
+import { BadRequestError, firstLetterUppercase, IAuthDocument, IEmailMessageDetails, lowerCase } from "@namdz608/jobber-shared";
 import cloudinary, { UploadApiResponse, UploadApiErrorResponse } from 'cloudinary';
-import { createAuthUser, getUserByUsernameOrEmail  } from "@notifications/services/auth.services";
-// import { publishDirectMessage } from "@notifications/queues/auth.producer";
-// import { authChannel } from "@notifications/server";
+import { createAuthUser, getUserByUsernameOrEmail, signToken } from "@notifications/services/auth.services";
+import { publishDirectMessage } from "@notifications/queues/auth.producer";
+import { authChannel } from "@notifications/server";
 import { StatusCodes } from "http-status-codes";
+import { hash } from 'bcryptjs';
 
 function uploads(
     file: string,
@@ -51,33 +52,34 @@ export async function create(req: Request, res: Response): Promise<void> {
     }
     const randomBytes: Buffer = await Promise.resolve(crypto.randomBytes(20));
     const randomCharacters: string = randomBytes.toString('hex');
+    const hashedPassword: string = await hash(password as string, 10);
     const authData: IAuthDocument = {
         username: firstLetterUppercase(username),
         email: lowerCase(email),
         profilePublicId,
-        password,
+        password: hashedPassword,
         country,
         profilePicture: uploadResult?.secure_url,
         emailVerificationToken: randomCharacters,
         browserName,
         deviceType
     } as IAuthDocument;
-    console.log('authData', authData)
-    const result = await createAuthUser(authData);
+    const newUser = await createAuthUser(authData);
     const verificationLink = `${process.env.CLIENT_URL}/confirm_email?v_token=${authData.emailVerificationToken}`;
-    console.log(verificationLink)
-    // const messageDetails: IEmailMessageDetails = {
-    //     receiverEmail: result.email,
-    //     verifyLink: verificationLink,
-    //     template: 'verifyEmail'
-    // };
-    // await publishDirectMessage(
-    //     authChannel,
-    //     'jobber-email-notification',
-    //     'auth-email',
-    //     JSON.stringify(messageDetails),
-    //     'Verify email message has been sent to notification service.'
-    // );
-    // const userJWT: string = signToken(result.id!, result.email!, result.username!);
-    res.status(StatusCodes.CREATED).json({ message: 'User created successfully', user: result });
+    var string = JSON.stringify(newUser);
+    var result = JSON.parse(string);
+    const messageDetails: IEmailMessageDetails = {
+        receiverEmail: result.email,
+        verifyLink: verificationLink,
+        template: 'verifyEmail'
+    };
+    await publishDirectMessage(
+        authChannel,
+        'jobber-email-notification',
+        'auth-email',
+        JSON.stringify(messageDetails),
+        'Verify email message has been sent to notification service.'
+    );
+    const userJWT: string = signToken(result.id!, result.email!, result.username!);
+    res.status(StatusCodes.CREATED).json({ message: 'User created successfully', user: result, token: userJWT });
 }

@@ -1,19 +1,13 @@
-FROM node:21-alpine3.18 as builder
+FROM node:21-alpine3.18
 
 WORKDIR /app
-COPY . .
-RUN npm install -g npm@latest
-RUN npm ci && npm run build
 
-FROM node:21-alpine3.18 as builder
-
-WORKDIR /app
-RUN apk add --no-cache curl
 COPY . .
-RUN npm install -g pm2 npm@latest
-RUN npm ci --production
-COPY --from=builder /app/build ./build
+
+RUN npm install --force
+
+RUN npm run build
 
 EXPOSE 4000
 
-CMD ["npm", "run", "start "]
+CMD ["node", "build/src/app.js"]
