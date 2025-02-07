@@ -1,7 +1,7 @@
 import { BadRequestError, isEmail } from '@namdz608/jobber-shared';
-import { AuthModel } from '@notifications/models/auth.schema';
-import { loginSchema } from '@notifications/schemes/signin';
-import { getUserByEmail, getUserByUsername, signToken } from '@notifications/services/auth.services';
+import { AuthModel } from '../models/auth.schema';
+import { loginSchema } from '../schemes/signin';
+import { getUserByEmail, getUserByUsername, signToken } from '../services/auth.services';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 

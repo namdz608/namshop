@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import crypto from 'crypto';
 import { v4 as uuidV4 } from 'uuid';
-import { signupSchema } from "@notifications/schemes/signup";
+import { signupSchema } from "../schemes/signup";
 import { BadRequestError, firstLetterUppercase, IAuthDocument, IEmailMessageDetails, lowerCase } from "@namdz608/jobber-shared";
 import cloudinary, { UploadApiResponse, UploadApiErrorResponse } from 'cloudinary';
-import { createAuthUser, getUserByUsernameOrEmail, signToken } from "@notifications/services/auth.services";
-import { publishDirectMessage } from "@notifications/queues/auth.producer";
-import { authChannel } from "@notifications/server";
+import { createAuthUser, getUserByUsernameOrEmail, signToken } from "../services/auth.services";
+import { publishDirectMessage } from "../queues/auth.producer";
+import { authChannel } from "../server";
 import { StatusCodes } from "http-status-codes";
 import { hash } from 'bcryptjs';
 
