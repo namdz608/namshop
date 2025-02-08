@@ -13,7 +13,6 @@ function cloudinaryConfig(): void {
 }
 
 const initialize = (): void => {
-    console.log('dasf', process.env.CLOUD_API_KEY,)
     cloudinaryConfig()
     const app: Express = express()
     databaseConnection()

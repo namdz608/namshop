@@ -1,0 +1,63 @@
+# Deployment cho Nginx với 2 Pods
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth-container
+        envFrom:
+        - configMapRef:
+            name: cfmap-auth
+        image: brucewayne2610/auth-svc
+        ports:
+        - containerPort: 4000
+
+---
+# Service loại NodePort để truy cập Nginx từ bên ngoài
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+spec:
+  type: NodePort
+  selector:
+    app: auth
+  ports:
+    - protocol: TCP
+      port: 4002          # Port bên trong cluster
+      targetPort: 4002    # Port mà container nghe
+      nodePort: 30001   # Port trên Node để truy cập từ bên ngoài (có thể thay đổi trong khoảng 30000-32767)
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cfmap-auth
+data:
+  ENABLE_APM: '0'
+  GATEWAY_JWT_TOKEN: H4eyprB4x0bA5Kw #ngau nhien
+  JWT_TOKEN: A9WQKi6R0nRexZJ
+  AP_GATEWAY_URL: http://gateway:4000
+  NODE_ENV: development
+  MYSQL_DB: mysql://root:Sp77777776@3.135.208.5:32306/jobber_auth
+  CLOUD_NAME: dhwphvzji
+  CLOUD_API_KEY: '637339766266198'
+  CLOUD_API_SECRET: YSMsZIByX0kcaXltgklDPF5NeJg
+  ELASTIC_SEARCH_URL: https://elastic:elastic@es-test.senprints.net
+  ELASTIC_APM_SERVER_URL: http://localhost:8200
+  CLIENT_URL: http://localhost:3000
+  ELASTIC_APM_SECRET_TOKEN: 
+  RABBITMQ_ENDPOINT: amqp://senprints:senprints@3.145.88.130:30672
+

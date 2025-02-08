@@ -1,0 +1,65 @@
+# Deployment cho Nginx với 2 Pods
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+  labels:
+    app: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway-container
+        envFrom:
+        - configMapRef:
+            name: cfmap-gateway
+        image: brucewayne2610/gateway-svc
+        ports:
+        - containerPort: 4000
+
+---
+# Service loại NodePort để truy cập Nginx từ bên ngoài
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  type: NodePort
+  selector:
+    app: gateway
+  ports:
+    - protocol: TCP
+      port: 4000          # Port bên trong cluster
+      targetPort: 4000    # Port mà container nghe
+      nodePort: 30000   # Port trên Node để truy cập từ bên ngoài (có thể thay đổi trong khoảng 30000-32767)
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cfmap-gateway
+data:
+  ENABLE_APM: "0"
+  NODE_ENV: "development"
+  CLIENT_URL: "http://localhost:3000"
+  AUTH_BASE_URL: http://auth:4002
+  USERS_BASE_URL: "http://localhost:4003"
+  GIG_BASE_URL: "http://localhost:4004"
+  MESSAGE_BASE_URL: "http://localhost:4005"
+  ORDER_BASE_URL: "http://localhost:4006"
+  REVIEW_BASE_URL: "http://localhost:4007"
+  REDIS_HOST: "redis://localhost:6379"
+  ELASTIC_SEARCH_URL: "https://elastic:elastic@es-test.senprints.net"
+  ELASTIC_APM_SERVER_URL: "http://localhost:8200"
+  GATEWAY_JWT_TOKEN: "H4eyprB4x0bA5Kw"  # Base64 encoded
+  JWT_TOKEN: "A9WQKi6R0nRexZJ"          # Base64 encoded
+  SECRET_KEY_ONE: "FDeKIXCGOtyTrUS"     # Base64 encoded
+  SECRET_KEY_TWO: "KrFxDMY6w61PgaO"     # Base64 encoded
+  ELASTIC_APM_SECRET_TOKEN: "base64_encoded_value"
