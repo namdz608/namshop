@@ -20,9 +20,6 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations:
-        cattle.io/timestamp: '2024-11-14T02:42:29Z'
-      creationTimestamp: null
       labels:
         app: elasticsearch
       namespace: senprints-dev

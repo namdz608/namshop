@@ -13,9 +13,24 @@ spec:
     apiVersion: v1
     kind: PersistentVolumeClaim
     name: elasticsearch-pv-claim
-    namespace: default
+    namespace: elastic
   hostPath:
     path: /data/elasticsearch
     type: DirectoryOrCreate
   persistentVolumeReclaimPolicy: Retain
   volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elasticsearch-pv-claim
+  namespace: elastic
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeMode: Filesystem  
+  volumeName: elastic-searchllog
+  resources:
+    requests:
+      storage: 5Gi
