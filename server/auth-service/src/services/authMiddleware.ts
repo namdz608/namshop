@@ -1,10 +1,11 @@
 import { BadRequestError, IAuthPayload, NotAuthorizedError } from '@namdz608/jobber-shared'
 import { Request, Response, NextFunction } from 'express'
 import { verify } from 'jsonwebtoken'
+import { StatusCodes } from 'http-status-codes';
 require('dotenv').config();
 
 class AuthMiddleWare {
-    public verifyUser(req: Request, _res: Response, next: NextFunction): void {
+    public verifyUser(req: Request, res: Response, next: NextFunction): void {
         if (req.headers.authorization) {
             console.log('middleware from auth/svc/middleware')
             try {
@@ -17,7 +18,7 @@ class AuthMiddleWare {
             next()
         }
         else {
-            throw new NotAuthorizedError('Token is not available. Please login again', 'GatewayService verify method error')
+            res.status(StatusCodes.FORBIDDEN).json({ message: 'Forbidden access'});
         }
     }
 
